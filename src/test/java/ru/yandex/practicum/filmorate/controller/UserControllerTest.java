@@ -30,7 +30,7 @@ class UserControllerTest {
 
     @Test
     void shouldAddValidUser() {
-        User added = userController.add(testUser);
+        User added = userController.add(testUser).getBody();
         assertNotNull(added.getId());
         assertEquals(1, added.getId());
     }
@@ -114,28 +114,28 @@ class UserControllerTest {
     @Test
     void shouldSetNameToLoginWhenNameIsBlank() {
         testUser.setName("");
-        User added = userController.add(testUser);
+        User added = userController.add(testUser).getBody();
         assertEquals(testUser.getLogin(), added.getName());
     }
 
     @Test
     void shouldSetNameToLoginWhenNameIsNull() {
         testUser.setName(null);
-        User added = userController.add(testUser);
+        User added = userController.add(testUser).getBody();
         assertEquals(testUser.getLogin(), added.getName());
     }
 
     @Test
     void shouldUpdateValidUser() {
-        User added = userController.add(testUser);
+        User added = userController.add(testUser).getBody();
         added.setName("New Name");
-        User updated = userController.add(added);
+        User updated = userController.add(added).getBody();
         assertEquals("New Name", updated.getName());
     }
 
     @Test
     void shouldSetNameToLoginOnUpdateWhenNameBlank() {
-        User added = userController.add(testUser);
+        User added = userController.add(testUser).getBody();
         added.setName("");
         User updated = userController.update(added);
         assertEquals(added.getLogin(), updated.getName());
@@ -143,7 +143,7 @@ class UserControllerTest {
 
     @Test
     void shouldThrowWhenUpdateWithInvalidUser() {
-        User added = userController.add(testUser);
+        User added = userController.add(testUser).getBody();
         added.setEmail("invalid");
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> userController.update(added));

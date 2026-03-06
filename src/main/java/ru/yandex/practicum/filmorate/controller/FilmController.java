@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -17,27 +19,27 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    public List<Film> getAll() {
+    public ResponseEntity<List<Film>> getAll() {
         log.info("GET /films");
-        return filmService.getAll();
+        return new ResponseEntity<>(filmService.getAll(), HttpStatusCode.valueOf(200));
     }
 
     @GetMapping("/{id}")
-    public Film getById(@PathVariable Long id) {
+    public ResponseEntity<Film> getById(@PathVariable Long id) {
         log.info("GET /films/{}", id);
-        return filmService.getById(id);
+        return new ResponseEntity<>(filmService.getById(id), HttpStatusCode.valueOf(200));
     }
 
     @PostMapping
-    public Film add(@RequestBody Film film) {
+    public ResponseEntity<Film> add(@RequestBody Film film) {
         log.info("POST /films - {}", film);
-        return filmService.add(film);
+        return new ResponseEntity<>(filmService.add(film), HttpStatusCode.valueOf(200));
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film) {
+    public ResponseEntity<Film> update(@RequestBody Film film) {
         log.info("PUT /films - {}", film);
-        return filmService.update(film);
+        return new ResponseEntity<>(filmService.update(film), HttpStatusCode.valueOf(200));
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -53,8 +55,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+    public ResponseEntity<List<Film>> getPopular(@RequestParam(defaultValue = "10") int count) {
         log.info("GET /films/popular?count={}", count);
-        return filmService.getPopular(count);
+        return new ResponseEntity<>(filmService.getPopular(count), HttpStatusCode.valueOf(200));
     }
 }

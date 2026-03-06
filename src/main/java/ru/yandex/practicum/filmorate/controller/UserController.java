@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -16,21 +18,21 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<User> getAll() {
+    public ResponseEntity<List<User>> getAll() {
         log.info("GET /users");
-        return userService.getAll();
+        return new ResponseEntity<>(userService.getAll(), HttpStatusCode.valueOf(200));
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
+    public ResponseEntity<User> getById(@PathVariable Long id) {
         log.info("GET /users/{}", id);
-        return userService.getById(id);
+        return new ResponseEntity<>(userService.getById(id), HttpStatusCode.valueOf(200));
     }
 
     @PostMapping
-    public User add(@RequestBody User user) {
+    public ResponseEntity<User> add(@RequestBody User user) {
         log.info("POST /users - {}", user);
-        return userService.add(user);
+        return new ResponseEntity<>(userService.add(user), HttpStatusCode.valueOf(200));
     }
 
     @PutMapping
@@ -52,9 +54,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getFriends(@PathVariable Long id) {
+    public ResponseEntity<List<User>> getFriends(@PathVariable Long id) {
         log.info("GET /users/{}/friends", id);
-        return userService.getFriends(id);
+        return new ResponseEntity<>(userService.getFriends(id), HttpStatusCode.valueOf(200));
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

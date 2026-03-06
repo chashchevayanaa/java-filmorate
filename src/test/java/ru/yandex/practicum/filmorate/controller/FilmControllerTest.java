@@ -31,7 +31,7 @@ class FilmControllerTest {
 
     @Test
     void shouldAddValidFilm() {
-        Film added = filmController.add(validFilm);
+        Film added = filmController.add(validFilm).getBody();
         assertNotNull(added.getId());
         assertEquals(1, added.getId());
     }
@@ -107,15 +107,15 @@ class FilmControllerTest {
 
     @Test
     void shouldUpdateValidFilm() {
-        Film added = filmController.add(validFilm);
+        Film added = filmController.add(validFilm).getBody();
         added.setName("Updated");
-        Film updated = filmController.update(added);
+        Film updated = filmController.update(added).getBody();
         assertEquals("Updated", updated.getName());
     }
 
     @Test
     void shouldThrowWhenUpdateWithInvalidFilm() {
-        Film added = filmController.add(validFilm);
+        Film added = filmController.add(validFilm).getBody();
         added.setName("");
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> filmController.update(added));
