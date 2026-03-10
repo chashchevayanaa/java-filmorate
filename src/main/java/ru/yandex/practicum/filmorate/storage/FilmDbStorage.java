@@ -96,22 +96,4 @@ public class FilmDbStorage implements FilmStorage {
             mpaStorage.addFilmMpa(film);
         return getById(film.getId());
     }
-
-    private Optional<Film> getByNameAndReleaseDate(String name, LocalDate releaseDate) {
-        String query = "select * from films where name = ? and releaseDate = ?";
-        Film film = jdbcTemplate.queryForObject(query, filmRowMapper, name, releaseDate);
-        assert film != null;
-        try {
-            film.setGenres(genreStorage.getByFilmId(film.getId()));
-        } catch (Exception e) {
-            film.setGenres(new ArrayList<>());
-        }
-
-        try {
-            film.setMpa(mpaStorage.getByFilmId(film.getId()));
-        } catch (Exception e) {
-            film.setMpa(new Mpa());
-        }
-        return Optional.of(film);
-    }
 }
