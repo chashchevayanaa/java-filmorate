@@ -25,15 +25,15 @@ public class LikesDbStorage implements LikesStorage {
     private MpaStorage mpaStorage;
 
     @Override
-    public void addLike(long film_id, long user_id) {
+    public void addLike(long filmId, long userId) {
         String query = "insert into film_likes (film_id, user_id) values (?, ?)";
-        jdbcTemplate.update(query, film_id, user_id);
+        jdbcTemplate.update(query, filmId, userId);
     }
 
     @Override
-    public void removeLike(long film_id, long user_id) {
+    public void removeLike(long filmId, long userId) {
         String query = "delete from film_likes where film_id = ? and user_id = ?";
-        jdbcTemplate.update(query, film_id, user_id);
+        jdbcTemplate.update(query, filmId, userId);
     }
 
     @Override
