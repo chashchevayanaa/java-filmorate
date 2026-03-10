@@ -63,25 +63,6 @@ public class FilmService {
         log.info("Пользователь {} удалил лайк у фильма {}", userId, filmId);
     }
 
-    /*
-        public void addLike(Long filmId, Long userId) {
-            log.debug("Пользователь {} ставит лайк фильму {}", userId, filmId);
-            userStorage.getById(userId)
-                    .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
-            Film film = getById(filmId);
-            film.getLikes().add(userId);
-            log.info("Пользователь {} поставил лайк фильму {}", userId, filmId);
-        }
-
-        public void removeLike(Long filmId, Long userId) {
-            log.debug("Пользователь {} удаляет лайк у фильма {}", userId, filmId);
-            userStorage.getById(userId)
-                    .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
-            Film film = getById(filmId);
-            film.getLikes().remove(userId);
-            log.info("Пользователь {} удалил лайк у фильма {}", userId, filmId);
-        }
-    */
     private void validate(Film film) {
         log.debug("Валидация фильма: {}", film);
         if (film.getName() == null || film.getName().isBlank()) {
