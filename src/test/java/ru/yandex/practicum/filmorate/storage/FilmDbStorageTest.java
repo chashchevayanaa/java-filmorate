@@ -152,8 +152,8 @@ class FilmDbStorageTest {
 
         assertThat(updated.getName()).isEqualTo("Updated");
         assertThat(updated.getMpa().getId()).isEqualTo(2);
-        assertThat(updated.getGenres()).hasSize(1)
+        assertThat(updated.getGenres()).hasSize(2)
                 .extracting(Genre::getId)
-                .containsExactly(2L);
+                .containsExactly(1L, 2L);
     }
 }

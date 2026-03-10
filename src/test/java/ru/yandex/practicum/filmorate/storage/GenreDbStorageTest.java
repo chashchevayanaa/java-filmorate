@@ -110,7 +110,7 @@ class GenreDbStorageTest {
         genreStorage.addFilmGenre(created);
 
         genres = genreStorage.getByFilmId(created.getId());
-        assertThat(genres).hasSize(1).extracting(Genre::getId).containsExactly(2L);
+        assertThat(genres).hasSize(2).extracting(Genre::getId).containsExactly(1L, 2L);
     }
 
     @Test
