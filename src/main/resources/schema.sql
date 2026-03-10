@@ -74,13 +74,3 @@ ALTER TABLE films
     ADD FOREIGN KEY (mpa_id)
     REFERENCES mpa(mpa_id) ON DELETE SET NULL;
 
-CREATE UNIQUE INDEX IF NOT EXISTS uq_film_release ON films
-(
-    name, releaseDate
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS uq_film_likes ON film_likes
-(
-    user_id, film_id
-);
-

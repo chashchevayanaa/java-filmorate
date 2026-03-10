@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,6 +14,9 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.MpaStorage;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,18 +59,30 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> add(Film film) {
-        jdbcTemplate.update(
-                "insert into films (name, description, duration, releaseDate) values (?, ?, ?, ?)",
-                film.getName(), film.getDescription(), film.getDuration(), film.getReleaseDate());
-        Optional<Film> insertedFilm = getByNameAndReleaseDate(film.getName(), film.getReleaseDate());
-        insertedFilm.get().setGenres(film.getGenres());
-        if (film.getGenres() != null)
-            genreStorage.addFilmGenre(insertedFilm.get());
-        insertedFilm.get().setMpa(film.getMpa());
-        if (film.getMpa() != null)
-            mpaStorage.addFilmMpa(insertedFilm.get());
 
-        return getByNameAndReleaseDate(film.getName(), film.getReleaseDate());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "insert into films (name, description, duration, releaseDate) values (?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, film.getName());
+            ps.setString(2, film.getDescription());
+            ps.setInt(3, film.getDuration());
+            ps.setDate(4, Date.valueOf(film.getReleaseDate()));
+            return ps;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey().longValue();
+        film.setId(id);
+
+        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+            genreStorage.addFilmGenre(film);
+        }
+        if (film.getMpa() != null) {
+            mpaStorage.addFilmMpa(film);
+        }
+
+        return getById(id);
     }
 
     @Override

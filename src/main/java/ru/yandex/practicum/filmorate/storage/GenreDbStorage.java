@@ -57,22 +57,26 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void addFilmGenre(Film film) throws NotFoundException {
-        jdbcTemplate.update("delete from genre_films where film_id = ?", film.getId());
+
         for (Genre genre : film.getGenres()) {
             if (!dbHasGenre(genre.getId()))
                 throw new NotFoundException("");
-            jdbcTemplate.update(
-                    "insert into genre_films (film_id, genre_id) values (?, ?)",
+            String query = """
+                    MERGE
+                    INTO
+                    	genre_films (film_id,
+                    	genre_id) KEY (film_id,
+                    	genre_id)
+                    VALUES (?, ?)
+                    """;
+            jdbcTemplate.update(query,
                     film.getId(), genre.getId());
         }
     }
 
     public boolean dbHasGenre(Long id) {
-        try {
-            jdbcTemplate.queryForObject("select * from genres where genre_id = ?", genreRowMapper, id);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
+        String sql = "SELECT COUNT(*) FROM genres WHERE genre_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count > 0;
     }
 }
