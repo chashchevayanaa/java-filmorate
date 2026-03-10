@@ -36,9 +36,9 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
+    public ResponseEntity<User> update(@RequestBody User user) {
         log.info("PUT /users - {}", user);
-        return userService.update(user);
+        return new ResponseEntity<>(userService.update(user), HttpStatusCode.valueOf(200));
     }
 
     @PutMapping("/{id}/friends/{friendId}")

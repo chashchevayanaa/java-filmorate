@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -31,15 +33,33 @@ public class FilmController {
     }
 
     @PostMapping
-    public ResponseEntity<Film> add(@RequestBody Film film) {
+    public ResponseEntity<Optional<Film>> add(@RequestBody Film film) {
         log.info("POST /films - {}", film);
-        return new ResponseEntity<>(filmService.add(film), HttpStatusCode.valueOf(200));
+        try {
+            return new ResponseEntity<>(filmService.add(film), HttpStatusCode.valueOf(200));
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(Optional.of(film), HttpStatusCode.valueOf(400));
+        } catch (Exception e) {
+            return new ResponseEntity<>(Optional.of(film), HttpStatusCode.valueOf(404));
+        }
     }
 
     @PutMapping
-    public ResponseEntity<Film> update(@RequestBody Film film) {
+    public ResponseEntity<Optional<Film>> update(@RequestBody Film film) {
         log.info("PUT /films - {}", film);
-        return new ResponseEntity<>(filmService.update(film), HttpStatusCode.valueOf(200));
+        try {
+            return new ResponseEntity<>(filmService.update(film), HttpStatusCode.valueOf(200));
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(Optional.of(film), HttpStatusCode.valueOf(400));
+        } catch (Exception e) {
+            return new ResponseEntity<>(Optional.of(film), HttpStatusCode.valueOf(404));
+        }
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<Film>> getPopular(@RequestParam(defaultValue = "10") int count) {
+        log.info("GET /films/popular?count={}", count);
+        return new ResponseEntity<>(filmService.getPopular(count), HttpStatusCode.valueOf(200));
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -52,11 +72,5 @@ public class FilmController {
     public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("DELETE /films/{}/like/{}", id, userId);
         filmService.removeLike(id, userId);
-    }
-
-    @GetMapping("/popular")
-    public ResponseEntity<List<Film>> getPopular(@RequestParam(defaultValue = "10") int count) {
-        log.info("GET /films/popular?count={}", count);
-        return new ResponseEntity<>(filmService.getPopular(count), HttpStatusCode.valueOf(200));
     }
 }
