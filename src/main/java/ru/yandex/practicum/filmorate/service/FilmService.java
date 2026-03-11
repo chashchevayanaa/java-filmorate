@@ -27,10 +27,10 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
-    public Film getById(Long id) {
+    public Optional<Film> getById(Long id) {
         log.debug("Запрос фильма по id: {}", id);
-        return filmStorage.getById(id)
-                .orElseThrow(() -> new NotFoundException("Фильм с id " + id + " не найден"));
+        return Optional.of(filmStorage.getById(id)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + id + " не найден")));
     }
 
     public Optional<Film> add(Film film) {

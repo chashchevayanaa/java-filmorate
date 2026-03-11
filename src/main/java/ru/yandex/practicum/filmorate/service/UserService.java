@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,25 +26,25 @@ public class UserService {
         return userStorage.getAll();
     }
 
-    public User getById(Long id) {
+    public Optional<User> getById(Long id) {
         log.debug("Запрос пользователя по id: {}", id);
-        return userStorage.getById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
+        return Optional.of(userStorage.getById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден")));
     }
 
-    public User add(User user) {
+    public Optional<User> add(User user) {
         log.debug("Добавление нового пользователя: {}", user);
         validate(user);
         handleEmptyName(user);
-        return userStorage.add(user);
+        return Optional.ofNullable(userStorage.add(user));
     }
 
-    public User update(User user) {
+    public Optional<User> update(User user) {
         log.debug("Обновление пользователя: {}", user);
-        User user1 = getById(user.getId());
+        Optional<User> user1 = getById(user.getId());
         validate(user);
         handleEmptyName(user);
-        return userStorage.update(user);
+        return Optional.ofNullable(userStorage.update(user));
     }
 
     public void addFriend(Long userId, Long friendId) {

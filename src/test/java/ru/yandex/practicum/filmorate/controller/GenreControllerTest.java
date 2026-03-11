@@ -1,10 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.dto.GenreDTO;
+import ru.yandex.practicum.filmorate.dto.mapper.GenreDTOMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.interfaces.GenreStorage;
 
@@ -13,9 +17,11 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(GenreController.class)
+@Import(GenreDTOMapper.class)
 class GenreControllerTest {
 
     @Autowired
@@ -24,11 +30,17 @@ class GenreControllerTest {
     @MockBean
     private GenreStorage genreStorage;
 
+    private Genre genre;
+    private GenreDTO genreDTO;
+
+    @BeforeEach
+    void setUp() {
+        genre = new Genre(1L, "Комедия");
+        genreDTO = new GenreDTO(1L, "Комедия");
+    }
+
     @Test
     void getAll_ShouldReturn200AndList() throws Exception {
-        Genre genre = new Genre();
-        genre.setId(1L);
-        genre.setName("Комедия");
         when(genreStorage.getAll()).thenReturn(List.of(genre));
 
         mockMvc.perform(get("/genres"))
@@ -38,10 +50,7 @@ class GenreControllerTest {
     }
 
     @Test
-    void getById_ShouldReturn200AndOptionalGenre_WhenExists() throws Exception {
-        Genre genre = new Genre();
-        genre.setId(1L);
-        genre.setName("Комедия");
+    void getById_ShouldReturn200AndGenreDTO_WhenExists() throws Exception {
         when(genreStorage.getById(1L)).thenReturn(Optional.of(genre));
 
         mockMvc.perform(get("/genres/1"))
